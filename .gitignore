@@ -1,0 +1,22 @@
+# Secrets / keys / credentials
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*.csr
+client.keys
+authd.pass
+ossec.conf
+wazuh_envs
+*.env
+
+# Logs
+*.log
+logs/
+*.json
+alerts.json
+
+# OS / tooling
+.DS_Store
+Thumbs.db
