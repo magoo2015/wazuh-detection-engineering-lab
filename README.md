@@ -72,7 +72,7 @@ Docs:
 
 ---
 
-## Next: Phase 4 — Detection Engineering
+## Next: Phase 4 — Detection Engineering (Completed)
 Planned work:
 - Create first custom macOS detection rule
 - Map to MITRE ATT&CK

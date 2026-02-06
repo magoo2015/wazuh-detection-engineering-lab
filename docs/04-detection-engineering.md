@@ -38,3 +38,29 @@ Design, implement, and validate a **custom macOS detection** in Wazuh using real
 ### Rule Location
 ```text
 /var/ossec/etc/rules/local_rules.xml
+
+### ✅ Phase 4.1 — macOS Credential Access Detection
+- Implemented a custom Wazuh wrapper rule (`100100`) chained to the built-in macOS sudo rule (`5404`)
+- Detects repeated failed sudo authentication attempts
+- MITRE ATT&CK: **T1110.001 – Password Guessing**
+- Demonstrates safe extension of vendor logic using `if_sid`
+
+### ✅ Phase 4.2 — macOS Persistence Detection (LaunchAgents)
+- Enabled File Integrity Monitoring (FIM / syscheck) for macOS persistence locations:
+  - `/Users/*/Library/LaunchAgents`
+  - `/Library/LaunchDaemons`
+- Verified base syscheck alerts:
+  - **554** — File added
+  - **550** — Integrity checksum changed
+- Implemented custom persistence wrapper rules:
+  - **100200** — New LaunchAgent plist added
+  - **100201** — Existing LaunchAgent plist modified
+- Rules safely chain off base syscheck logic and add MITRE context
+- MITRE ATT&CK: **T1543.001 – Launch Agent**
+
+### ⏭️ Next: Phase 4.3 — High-Signal macOS Persistence (Pro Move)
+- Detect suspicious LaunchAgent behavior (not just file changes)
+- Focus on malicious plist content such as:
+  - `ProgramArguments` invoking `bash`, `curl`, `python`
+  - `RunAtLoad` or `KeepAlive` persistence mechanisms
+  - Execution from user-writable or temporary paths
