@@ -72,11 +72,83 @@ Docs:
 
 ---
 
-## Next: Phase 4 — Detection Engineering (Completed)
-Planned work:
-- Create first custom macOS detection rule
-- Map to MITRE ATT&CK
-- Validate alerts + tune noise
-- Create SOC-style runbook
+## Phase 4 — Detection Engineering (Completed)
 
-(Phase 4 work will live under `detections/` and `runbooks/`.)
+### Phase 4.1 — Authentication Abuse Detection
+- Built a custom wrapper rule on top of Wazuh sudo detection
+- Focused on repeated sudo authentication failures
+- Mapped to **MITRE ATT&CK T1110.001 (Password Guessing)**
+- Validated alert generation and metadata
+
+---
+
+### Phase 4.2 — macOS Persistence Visibility
+- Enabled Syscheck/FIM for:
+  - `~/Library/LaunchAgents`
+  - `/Library/LaunchDaemons`
+- Verified:
+  - File creation events (`rule.id: 554`)
+  - File modification events (`rule.id: 550`)
+  - Hash, size, and timestamp changes
+- Confirmed `syscheck.diff` is populated when file content changes
+
+---
+
+### Phase 4.3 — High-Signal macOS LaunchAgent Persistence Analysis
+**MITRE ATT&CK:** T1543.001 — Launch Agent
+
+**Objective**
+Reduce noise by focusing on **suspicious LaunchAgent plist content**, not just file changes.
+
+**Technique Simulated**
+- LaunchAgent persistence using:
+  - `ProgramArguments`
+  - Downloader-to-shell execution (`curl | bash`)
+  - `RunAtLoad` for persistence
+
+**What Worked**
+- Syscheck reliably detected:
+  - Real content changes
+  - Hash and size deltas
+  - Full diff context showing malicious execution chains
+- High-fidelity forensic visibility achieved via `syscheck.diff`
+
+**Key Finding**
+- Although `syscheck.diff` is visible in alert JSON, it is **not reliably matchable by Wazuh rules** in version 4.x.
+- This limits pure rule-based inspection of FIM diff content without additional decoding or preprocessing.
+
+**Detection Engineering Decision**
+- Avoided brittle or misleading rules
+- Documented the limitation instead of forcing unreliable detection
+- Identified agent-side preprocessing as a production-grade workaround (not implemented in this lab)
+
+**Outcome**
+- Demonstrated realistic macOS persistence behavior
+- Validated detection visibility and constraints
+- Emphasized **analysis-driven detection engineering** over alert volume
+
+Detections:
+- `detections/`
+
+Runbooks:
+- `runbooks/`
+
+---
+
+## Status
+✔ Lab operational  
+✔ macOS persistence visibility validated  
+✔ Detection engineering constraints documented  
+✔ Portfolio-ready
+
+---
+
+## Next Steps (Planned)
+- Phase 4.4: Allowlisting known-good LaunchAgents
+- Phase 5: SOC triage and response workflows
+- Phase 6: Correlation between persistence and process/network activity
+
+
+
+
+
